@@ -1,74 +1,82 @@
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
-import 'package:flutter_snake_navigationbar/src/theming/snake_bottom_bar_theme.dart';
-import 'package:flutter_snake_navigationbar/src/theming/snake_shape.dart';
 
-import 'selection_notifier.dart';
+import '../snake_navigation_bar.dart';
+import 'theming/snake_bottom_bar_theme.dart';
 
 class SnakeView extends StatefulWidget {
   final int itemsCount;
   final double widgetEdgePadding;
-  final SelectionNotifier notifier;
+
   final Duration animationDuration;
   final Duration delayTransition;
   final Curve snakeCurve;
   final double indicatorHeight;
   final double height;
+  final int selection;
 
   const SnakeView({
-    Key? key,
+    super.key,
     required this.itemsCount,
     required this.widgetEdgePadding,
-    required this.notifier,
     this.animationDuration = const Duration(milliseconds: 200),
     this.delayTransition = const Duration(milliseconds: 50),
     this.snakeCurve = Curves.easeInOut,
     this.indicatorHeight = 4,
     required this.height,
-  }) : super(key: key);
+    required this.selection,
+  });
 
   @override
-  _SnakeViewState createState() => _SnakeViewState();
+  State<SnakeView> createState() => _SnakeViewState();
 }
 
 class _SnakeViewState extends State<SnakeView> {
   double left = 0;
   int snakeSize = 1;
-  int? currentIndex;
   Orientation? orientation;
   double? oneItemWidth;
   double? prevItemWidth;
 
   bool get isRTL => Directionality.of(context) == TextDirection.rtl;
 
-  void addListener() {
-    widget.notifier.addListener(() {
-      if (widget.notifier.lastIndex < widget.notifier.currentIndex) {
+  int _lastIndex = 0;
+  int _currentIndex = 0;
+
+  @override
+  void didUpdateWidget(covariant SnakeView oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.selection != widget.selection) {
+      _lastIndex = _currentIndex;
+      _currentIndex = widget.selection;
+      if (_lastIndex < _currentIndex) {
         _goRight();
-      } else if (widget.notifier.lastIndex > widget.notifier.currentIndex) {
+      } else if (_lastIndex > _currentIndex) {
         _goLeft();
       }
-      currentIndex = widget.notifier.currentIndex;
-    });
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _currentIndex = widget.selection;
   }
 
   @override
   Widget build(BuildContext context) {
+    final mediaQuery = MediaQuery.of(context);
     final theme = SnakeBottomBarTheme.of(context)!;
+
     oneItemWidth =
         (MediaQuery.of(context).size.width - widget.widgetEdgePadding) /
             widget.itemsCount;
 
-    addListener();
-
-    if (currentIndex == null ||
-        currentIndex != widget.notifier.currentIndex ||
-        orientation != MediaQuery.of(context).orientation ||
+    if (orientation != mediaQuery.orientation ||
         prevItemWidth != oneItemWidth) {
-      left = oneItemWidth! * widget.notifier.currentIndex;
-      currentIndex = widget.notifier.currentIndex;
-      orientation = MediaQuery.of(context).orientation;
+      left = oneItemWidth! * _currentIndex;
+      orientation = mediaQuery.orientation;
       prevItemWidth = oneItemWidth;
     }
 
@@ -110,7 +118,7 @@ class _SnakeViewState extends State<SnakeView> {
     );
   }
 
-  double _snakeViewHeight(SnakeBottomBarThemeData theme) {
+  double _snakeViewHeight(SnakeBarThemeData theme) {
     if (theme.snakeShape.height != null) {
       return theme.snakeShape.height!;
     }
@@ -126,34 +134,29 @@ class _SnakeViewState extends State<SnakeView> {
     }
   }
 
-  ShapeBorder? _snakeShape(SnakeBottomBarThemeData theme) {
-    switch (theme.snakeShape.type) {
-      case SnakeShapeType.circle:
-        return _getRoundShape(_snakeViewHeight(theme) / 2);
-
-      default:
-        return theme.snakeShape.shape;
-    }
+  ShapeBorder? _snakeShape(SnakeBarThemeData theme) {
+    return switch (theme.snakeShape.type) {
+      SnakeShapeType.circle => _getRoundShape(_snakeViewHeight(theme) / 2),
+      _ => theme.snakeShape.shape
+    };
   }
 
   void _goRight() {
-    final newSnakeSize =
-        widget.notifier.currentIndex + 1 - widget.notifier.lastIndex;
+    final newSnakeSize = _currentIndex + 1 - _lastIndex;
     setState(() => snakeSize = newSnakeSize);
     Future.delayed(
       widget.animationDuration + widget.delayTransition,
       () => setState(() {
         snakeSize = 1;
-        left = oneItemWidth! * widget.notifier.currentIndex;
+        left = oneItemWidth! * _currentIndex;
       }),
     );
   }
 
   void _goLeft() {
-    final newSnakeSize =
-        (widget.notifier.currentIndex - widget.notifier.lastIndex).abs();
+    final newSnakeSize = (_currentIndex - _lastIndex).abs();
     setState(() {
-      left = oneItemWidth! * widget.notifier.currentIndex;
+      left = oneItemWidth! * _currentIndex;
       snakeSize = newSnakeSize + 1;
     });
     Future.delayed(

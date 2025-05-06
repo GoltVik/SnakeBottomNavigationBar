@@ -48,16 +48,23 @@ class SnakeShape {
   }
 
   static const SnakeShape circle = SnakeShape._(
-      shape: null,
-      type: SnakeShapeType.circle,
-      centered: false,
-      padding: EdgeInsets.all(4));
+    shape: null,
+    type: SnakeShapeType.circle,
+    centered: false,
+    padding: EdgeInsets.all(4),
+  );
 
   static const SnakeShape rectangle = SnakeShape._(
-      shape: null, type: SnakeShapeType.rectangle, centered: false);
+    shape: null,
+    type: SnakeShapeType.rectangle,
+    centered: false,
+  );
 
   static const SnakeShape indicator = SnakeShape._(
-      shape: null, type: SnakeShapeType.indicator, centered: false);
+    shape: null,
+    type: SnakeShapeType.indicator,
+    centered: false,
+  );
 }
 
 enum SnakeShapeType { circle, rectangle, indicator, custom }

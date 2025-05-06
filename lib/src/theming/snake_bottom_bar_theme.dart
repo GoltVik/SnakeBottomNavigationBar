@@ -1,27 +1,27 @@
 import 'package:flutter/widgets.dart';
-import 'package:flutter_snake_navigationbar/flutter_snake_navigationbar.dart';
-import 'package:flutter_snake_navigationbar/src/theming/selection_style.dart';
+
+import '../../snake_navigation_bar.dart';
+import 'selection_style.dart';
 
 class SnakeBottomBarTheme extends InheritedWidget {
   const SnakeBottomBarTheme({
     required this.data,
-    Key? key,
-    required Widget child,
-  }) : super(key: key, child: child);
+    super.key,
+    required super.child,
+  });
 
-  final SnakeBottomBarThemeData data;
+  final SnakeBarThemeData data;
 
-  static SnakeBottomBarThemeData? of(BuildContext context) {
-    final bottomNavTheme =
-        context.dependOnInheritedWidgetOfExactType<SnakeBottomBarTheme>();
-    return bottomNavTheme?.data;
+  static SnakeBarThemeData? of(BuildContext context) {
+    final theme = context.dependOnInheritedWidgetOfExactType<SnakeBottomBarTheme>();
+    return theme?.data;
   }
 
   @override
   bool updateShouldNotify(SnakeBottomBarTheme oldWidget) => false;
 }
 
-class SnakeBottomBarThemeData {
+class SnakeBarThemeData {
   final Gradient snakeGradient;
   final Gradient backgroundGradient;
   final Gradient selectedItemGradient;
@@ -33,7 +33,7 @@ class SnakeBottomBarThemeData {
   final TextStyle? selectedLabelStyle;
   final TextStyle? unselectedLabelStyle;
 
-  SnakeBottomBarThemeData({
+  const SnakeBarThemeData({
     required this.snakeGradient,
     required this.backgroundGradient,
     required this.selectedItemGradient,

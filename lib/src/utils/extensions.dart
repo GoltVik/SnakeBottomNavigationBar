@@ -8,7 +8,7 @@ extension GradientExt on Gradient {
 }
 
 extension ColorExt on Color {
-  Gradient get toGradient => LinearGradient(colors: [this, this]);
+  Gradient get gradient => LinearGradient(colors: [this, this]);
 }
 
 extension IndexedIterable<E> on Iterable<E> {
