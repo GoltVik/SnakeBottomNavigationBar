@@ -6,19 +6,23 @@ import 'theming/snake_bottom_bar_theme.dart';
 import 'utils/extensions.dart';
 
 class SnakeItemTile extends StatelessWidget {
-  final Widget? icon;
+  final Widget icon;
+  final Widget? activeIcon;
   final String? label;
   final int? position;
   final bool isSelected;
   final VoidCallback? onTap;
+  final double? height;
 
   const SnakeItemTile({
+    required this.icon,
     super.key,
-    this.icon,
+    this.activeIcon,
     this.label,
     this.position,
     required this.isSelected,
     this.onTap,
+    this.height,
   });
 
   bool isIndicatorStyle(SnakeBarThemeData theme) =>
@@ -36,7 +40,9 @@ class SnakeItemTile extends StatelessWidget {
         onTap: onTap,
         behavior: HitTestBehavior.translucent,
         child: Container(
-          alignment: Alignment.center,
+          constraints: BoxConstraints(
+            minHeight: height ?? kBottomNavigationBarHeight,
+          ),
           margin: theme.snakeShape.padding,
           child: showLabels && label != null
               ? _getLabeledItem(theme)
@@ -50,6 +56,7 @@ class SnakeItemTile extends StatelessWidget {
     return Column(
       spacing: 1,
       mainAxisAlignment: MainAxisAlignment.center,
+      mainAxisSize: MainAxisSize.min,
       children: [
         _getThemedIcon(theme),
         _getThemedTitle(theme),
@@ -65,11 +72,11 @@ class SnakeItemTile extends StatelessWidget {
         ? ShaderMask(
             blendMode: BlendMode.srcIn,
             shaderCallback: itemGradient.defaultShader,
-            child: icon,
+            child: isSelected ? (activeIcon ?? icon) : icon,
           )
         : IconTheme(
             data: IconThemeData(color: itemGradient.colors.first),
-            child: icon!,
+            child: isSelected ? (activeIcon ?? icon) : icon,
           );
 
     return isIndicatorStyle(theme)

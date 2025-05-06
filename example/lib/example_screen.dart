@@ -25,7 +25,7 @@ class _SnakeBarExampleState extends State<SnakeBarExample> {
   EdgeInsets padding = const EdgeInsets.all(12);
 
   int _selectedItemPosition = 2;
-  SnakeShape snakeShape = SnakeShape.circle;
+  SnakeShape snakeShape = SnakeShape.circle();
 
   bool showSelectedLabels = false;
   bool showUnselectedLabels = false;
@@ -62,7 +62,8 @@ class _SnakeBarExampleState extends State<SnakeBarExample> {
     ),
     const Color(0xFFF4E4CE): DemoPage(
       text: 'And it\'s all open source!',
-      description: 'Get the Flutter library on github.com/herodotdigital',
+      description:
+          'Get the Flutter library on github.com/GoltVik/SnakeBottomNavigationBar',
       image: Image.asset('images/flutter4.png'),
     ),
   };
@@ -106,7 +107,8 @@ class _SnakeBarExampleState extends State<SnakeBarExample> {
 
       /// Important part
       bottomNavigationBar: SnakeNavigationBar.color(
-        // height: 80,
+        // useSafeArea: false,
+        // height: 100,
         behaviour: snakeBarStyle,
         snakeShape: snakeShape,
         shape: bottomBarShape,
@@ -115,7 +117,7 @@ class _SnakeBarExampleState extends State<SnakeBarExample> {
         ///configuration for SnakeNavigationBar.color
         snakeViewColor: selectedColor,
         selectedItemColor:
-            snakeShape == SnakeShape.indicator ? selectedColor : null,
+            snakeShape is IndicatorSnakeShape ? selectedColor : null,
         unselectedItemColor: unselectedColor,
 
         ///configuration for SnakeNavigationBar.gradient
@@ -141,7 +143,7 @@ class _SnakeBarExampleState extends State<SnakeBarExample> {
       case 0:
         setState(() {
           snakeBarStyle = SnakeBarBehaviour.floating;
-          snakeShape = SnakeShape.circle;
+          snakeShape = SnakeShape.circle();
           padding = const EdgeInsets.all(12);
           bottomBarShape = RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(25),
@@ -153,7 +155,7 @@ class _SnakeBarExampleState extends State<SnakeBarExample> {
       case 1:
         setState(() {
           snakeBarStyle = SnakeBarBehaviour.pinned;
-          snakeShape = SnakeShape.circle;
+          snakeShape = SnakeShape.circle();
           padding = EdgeInsets.zero;
           bottomBarShape = RoundedRectangleBorder(borderRadius: _borderRadius);
           showSelectedLabels = false;
@@ -164,7 +166,7 @@ class _SnakeBarExampleState extends State<SnakeBarExample> {
       case 2:
         setState(() {
           snakeBarStyle = SnakeBarBehaviour.pinned;
-          snakeShape = SnakeShape.rectangle;
+          snakeShape = SnakeShape.rectangle();
           padding = EdgeInsets.zero;
           bottomBarShape = BeveledRectangleBorder(borderRadius: _borderRadius);
           showSelectedLabels = true;
@@ -174,7 +176,7 @@ class _SnakeBarExampleState extends State<SnakeBarExample> {
       case 3:
         setState(() {
           snakeBarStyle = SnakeBarBehaviour.pinned;
-          snakeShape = SnakeShape.indicator;
+          snakeShape = SnakeShape.indicator();
           padding = EdgeInsets.zero;
           bottomBarShape = null;
           showSelectedLabels = false;

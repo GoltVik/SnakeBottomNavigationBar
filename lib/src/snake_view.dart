@@ -81,7 +81,7 @@ class _SnakeViewState extends State<SnakeView> {
     }
 
     final viewPadding = theme.snakeShape.type == SnakeShapeType.circle ||
-            theme.snakeShape.centered!
+            theme.snakeShape.centered
         ? () {
             final maxSize = math.min(oneItemWidth!, widget.height);
             return EdgeInsets.symmetric(
@@ -119,10 +119,6 @@ class _SnakeViewState extends State<SnakeView> {
   }
 
   double _snakeViewHeight(SnakeBarThemeData theme) {
-    if (theme.snakeShape.height != null) {
-      return theme.snakeShape.height!;
-    }
-
     switch (theme.snakeShape.type) {
       case SnakeShapeType.circle:
         final maxSize = math.min(oneItemWidth!, widget.height);

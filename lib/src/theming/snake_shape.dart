@@ -1,70 +1,103 @@
 import 'package:flutter/material.dart';
 
-class SnakeShape {
-  /// Contains a custom view shape
-  final ShapeBorder? shape;
-
-  ///Used to custom shapes to change bounds:
-  ///
-  /// if [centered] is true  -> element bounds are square with default padding
-  /// if [centered] is false -> element bounds fills the container size
-  final bool? centered;
-
-  /// Used internal for distinction defined and custom shapes
-  final SnakeShapeType? type;
-
-  /// Snake view padding for each tile
-  final EdgeInsets padding;
-
-  ///Snake view height
-  final double? height;
-
+sealed class SnakeShape {
   const SnakeShape({
+    required this.type,
     required this.shape,
-    this.centered = true,
-    this.padding = EdgeInsets.zero,
-    this.height,
-  }) : type = SnakeShapeType.custom;
-
-  const SnakeShape._({
-    this.shape,
-    this.type,
-    this.centered,
-    this.padding = EdgeInsets.zero,
-    this.height,
+    required this.centered,
+    required this.padding,
+    required this.alignment,
   });
 
-  SnakeShape copyWith({
+  final SnakeShapeType type;
+  final ShapeBorder shape;
+  final bool centered;
+  final EdgeInsets padding;
+  final AlignmentGeometry alignment;
+
+  const factory SnakeShape.circle({
+    bool? centered,
+    EdgeInsets? padding,
+    AlignmentGeometry? alignment,
+  }) = CircleSnakeShape;
+
+  const factory SnakeShape.rectangle({
+    bool? centered,
+    EdgeInsets? padding,
+    AlignmentGeometry? alignment,
+  }) = RectangleSnakeShape;
+
+  const factory SnakeShape.indicator({
+    bool? centered,
+    EdgeInsets? padding,
+    AlignmentGeometry? alignment,
+  }) = IndicatorSnakeShape;
+
+  const factory SnakeShape.custom({
+    required ShapeBorder shape,
+    bool centered,
+    EdgeInsets padding,
+    AlignmentGeometry alignment,
+  }) = CustomSnakeShape;
+}
+
+class CircleSnakeShape extends SnakeShape {
+  const CircleSnakeShape({
     ShapeBorder? shape,
     bool? centered,
     EdgeInsets? padding,
-  }) {
-    return SnakeShape._(
-      shape: shape ?? this.shape,
-      type: type,
-      centered: centered ?? this.centered,
-      padding: padding ?? this.padding,
-    );
-  }
+    AlignmentGeometry? alignment,
+  }) : super(
+          type: SnakeShapeType.circle,
+          shape: shape ?? const CircleBorder(),
+          centered: centered ?? true,
+          padding: padding ?? const EdgeInsets.all(4),
+          alignment: alignment ?? Alignment.center,
+        );
+}
 
-  static const SnakeShape circle = SnakeShape._(
-    shape: null,
-    type: SnakeShapeType.circle,
-    centered: false,
-    padding: EdgeInsets.all(4),
-  );
+class RectangleSnakeShape extends SnakeShape {
+  const RectangleSnakeShape({
+    ShapeBorder? shape,
+    bool? centered,
+    EdgeInsets? padding,
+    AlignmentGeometry? alignment,
+  }) : super(
+          type: SnakeShapeType.rectangle,
+          shape: shape ?? const RoundedRectangleBorder(),
+          centered: centered ?? false,
+          padding: padding ?? EdgeInsets.zero,
+          alignment: alignment ?? Alignment.center,
+        );
+}
 
-  static const SnakeShape rectangle = SnakeShape._(
-    shape: null,
-    type: SnakeShapeType.rectangle,
-    centered: false,
-  );
+class IndicatorSnakeShape extends SnakeShape {
+  const IndicatorSnakeShape({
+    ShapeBorder? shape,
+    bool? centered,
+    EdgeInsets? padding,
+    AlignmentGeometry? alignment,
+  }) : super(
+          type: SnakeShapeType.indicator,
+          shape: shape ?? const RoundedRectangleBorder(),
+          centered: centered ?? false,
+          padding: padding ?? EdgeInsets.zero,
+          alignment: alignment ?? Alignment.topCenter,
+        );
+}
 
-  static const SnakeShape indicator = SnakeShape._(
-    shape: null,
-    type: SnakeShapeType.indicator,
-    centered: false,
-  );
+class CustomSnakeShape extends SnakeShape {
+  const CustomSnakeShape({
+    required super.shape,
+    bool? centered,
+    EdgeInsets? padding,
+    AlignmentGeometry? alignment,
+  }) : super(
+          type: SnakeShapeType.custom,
+          centered: centered ?? false,
+          padding: padding ?? EdgeInsets.zero,
+          alignment: alignment ?? Alignment.center,
+        );
 }
 
 enum SnakeShapeType { circle, rectangle, indicator, custom }

@@ -1,3 +1,5 @@
+## [1.0.0] - Release after refactor and flutter upgrade
+
 ## [0.6.1] - Bugfix/active icon
 
 ## [0.6.0] - Added height parameter to SnakeShape configuration

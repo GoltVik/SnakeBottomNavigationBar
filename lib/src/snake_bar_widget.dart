@@ -79,6 +79,8 @@ class SnakeNavigationBar extends StatefulWidget {
   /// BottomNavigationBar height default is [kBottomNavigationBarHeight]
   final double height;
 
+  final bool useSafeArea;
+
   //endregion
 
   // region Constructor
@@ -98,11 +100,12 @@ class SnakeNavigationBar extends StatefulWidget {
     this.elevation = 0,
     this.onTap,
     this.behaviour = SnakeBarBehaviour.pinned,
-    this.snakeShape = SnakeShape.circle,
+    this.snakeShape = const SnakeShape.circle(),
     this.shadowColor = Colors.black,
     this.selectedLabelStyle,
     this.unselectedLabelStyle,
     required this.height,
+    this.useSafeArea = true,
   }) : showSelectedLabels =
             (snakeShape.type == SnakeShapeType.circle && showSelectedLabels)
                 ? false
@@ -123,11 +126,12 @@ class SnakeNavigationBar extends StatefulWidget {
     double elevation = 0.0,
     ValueChanged<int>? onTap,
     SnakeBarBehaviour behaviour = SnakeBarBehaviour.pinned,
-    SnakeShape snakeShape = SnakeShape.circle,
+    SnakeShape snakeShape = const SnakeShape.circle(),
     Color shadowColor = Colors.black,
     TextStyle? selectedLabelStyle,
     TextStyle? unselectedLabelStyle,
     double? height,
+    bool useSafeArea = true,
   }) =>
       SnakeNavigationBar._(
         SelectionStyle.color,
@@ -150,6 +154,7 @@ class SnakeNavigationBar extends StatefulWidget {
         selectedLabelStyle: selectedLabelStyle,
         unselectedLabelStyle: unselectedLabelStyle,
         height: height ?? kBottomNavigationBarHeight,
+        useSafeArea: useSafeArea,
       );
 
   factory SnakeNavigationBar.gradient({
@@ -167,11 +172,12 @@ class SnakeNavigationBar extends StatefulWidget {
     double elevation = 0.0,
     ValueChanged<int>? onTap,
     SnakeBarBehaviour behaviour = SnakeBarBehaviour.pinned,
-    SnakeShape snakeShape = SnakeShape.circle,
+    SnakeShape snakeShape = const SnakeShape.circle(),
     Color shadowColor = Colors.black,
     TextStyle? selectedLabelStyle,
     TextStyle? unselectedLabelStyle,
     double? height,
+    bool useSafeArea = true,
   }) =>
       SnakeNavigationBar._(
         SelectionStyle.gradient,
@@ -194,6 +200,7 @@ class SnakeNavigationBar extends StatefulWidget {
         selectedLabelStyle: selectedLabelStyle,
         unselectedLabelStyle: unselectedLabelStyle,
         height: height ?? kBottomNavigationBarHeight,
+        useSafeArea: useSafeArea,
       );
 
   //endregion
@@ -242,10 +249,20 @@ class _SnakeNavigationBarState extends State<SnakeNavigationBar> {
 
   @override
   Widget build(BuildContext context) {
+    final safeMargin =
+        widget.behaviour == SnakeBarBehaviour.floating && widget.useSafeArea
+            ? MediaQuery.of(context).viewPadding
+            : EdgeInsets.zero;
+
+    final safePadding =
+        widget.behaviour == SnakeBarBehaviour.floating || !widget.useSafeArea
+            ? EdgeInsets.zero
+            : MediaQuery.of(context).viewPadding;
+
     return SnakeBottomBarTheme(
       data: theme,
       child: AnimatedPadding(
-        padding: widget.padding,
+        padding: widget.padding + safeMargin,
         duration: _defaultAnimationDuration,
         child: Material(
           type: MaterialType.transparency,
@@ -256,22 +273,26 @@ class _SnakeNavigationBarState extends State<SnakeNavigationBar> {
           child: AnimatedContainer(
             duration: _defaultAnimationDuration,
             decoration: BoxDecoration(gradient: theme.backgroundGradient),
-            height: widget.height,
+            padding: safePadding,
             child: Stack(
+              alignment: widget.snakeShape.alignment,
               children: [
                 SnakeView(
                   itemsCount: widget.items!.length,
-                  height: widget.height,
+                  height: widget.height + 8,
                   widgetEdgePadding: widget.padding.left + widget.padding.right,
                   selection: _currentIndex,
                 ),
                 Row(
+                  mainAxisSize: MainAxisSize.min,
                   children: [
                     for (final (index, value) in widget.items!.indexed)
                       SnakeItemTile(
                         icon: value.icon,
+                        activeIcon: value.activeIcon,
                         label: value.label,
                         position: index,
+                        height: widget.height,
                         isSelected: _currentIndex == index,
                         onTap: () => setState(() {
                           _currentIndex = index;
